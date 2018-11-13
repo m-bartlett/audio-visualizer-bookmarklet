@@ -86,7 +86,7 @@ function ellipse(theta, a, b) {
     for (var i = 0; i < cap - 1; i++) {
         if (data[i + start] > dots[i].max_vol) dots[i].max_vol = data[i + start]
         else if (timestamp - last_timestamp >= 50 && dots[i].max_vol > 1) {
-            dots[i].max_vol -= 0.001;
+            dots[i].max_vol -= 0.00001;
             last_timestamp = timestamp
         }
         dots[i].theta = ((i + 1) / (cap)) * Math.PI * 2 + timestamp / 8000
