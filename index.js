@@ -8,9 +8,7 @@ analyser.connect(audioCtx.destination)
 source.connect(analyser)
 
 const canvas = document.createElement("canvas");
-(canvas.resize = function() {
-    [canvas.width, canvas.height] = [window.innerWidth, window.innerHeight];
-})();
+(canvas.resize = function() { [canvas.width, canvas.height] = [window.innerWidth, window.innerHeight]; })();
 window.addEventListener('resize', canvas.resize, false);
 
 const ctx = canvas.getContext('2d');
@@ -30,14 +28,16 @@ Object.assign(canvas.style, {
 
 document.body.appendChild(canvas);
 
+const buffer = JSON.parse(JSON.stringify(canvas))
+
 analyser.fftSize = 256
 const bufferLength = analyser.frequencyBinCount
 const data = new Uint8Array(bufferLength)
     // ctx.lineWidth = 0.5
 var cap = data.length * 5 / 9
-const start = parseInt(cap / 10, 10)
+const start = parseInt(cap / 10, 10)    
 cap -= start
-const lines_per = 3
+const lines_per = 3n
 var last_timestamp = Date.now()
 const dots = []
 for (var i = 0; i < cap; i++) dots.push(new Dot((i / cap) * 360))
@@ -86,13 +86,13 @@ function ellipse(theta, a, b) {
     for (var i = 0; i < cap - 1; i++) {
         if (data[i + start] > dots[i].max_vol) dots[i].max_vol = data[i + start]
         else if (timestamp - last_timestamp >= 50 && dots[i].max_vol > 1) {
-            dots[i].max_vol -= 0.00001;
+            dots[i].max_vol -= 0.001;
             last_timestamp = timestamp
         }
         dots[i].theta = ((i + 1) / (cap)) * Math.PI * 2 + timestamp / 8000
             // const minrad = ellipse(dots[i].theta, canvas.width / 2, canvas.height / 2)
         // const maxrad = ellipse(dots[i].theta, canvas.width, canvas.height) - minrad
-        dots[i].radius = minrad + Math.pow(data[i + start] / dots[i].max_vol, 3.0) * restrad
+        dots[i].radius = minrad + Math.pow(data[i + start] / dots[i].max_vol, 2.0) * restrad
         // dots[i].radius = minrad + Math.pow(data[i + start] / dots[i].max_vol, 3.0) * maxrad
         dots[i].rect()
         dots[i].hue += 0.25
